@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite";
-import React, { useContext, useEffect} from "react";
-import { Table } from "react-bootstrap";
+import React, { useContext, useEffect, useState} from "react";
+import Table from "react-bootstrap/Table";
 import { Context } from "..";
 import { useNavigate } from "react-router-dom";
 import { SECTION_ROUTE } from "../utils/consts";
@@ -10,16 +10,15 @@ const SectionsBar : React.FC  = observer( () => {
 
     const question_store = useContext(Context)?.question_store;
     const navigate = useNavigate();
-    const [sectionId_questionCount, setSectionId_questionCount] = React.useState<{[key: number]: number}>({});
+    const [sectionId_questionCount, setSectionId_questionCount] = useState<{[key: number]: number}>({});
     
     useEffect(() => {
         question_store?.sections.map(section => 
-            fetchQuestionsBySectionId(section.id).then(data => {
-                setSectionId_questionCount(prevState => ({...prevState, [section.id]: data.count}));
+            fetchQuestionsBySectionId(section.id ?? -1).then(data => {
+                setSectionId_questionCount(prevState => ({...prevState, [section.id ?? -1]: data.count}));
             })
         );
     }, [question_store?.sections]);
-
 
     return (
         <Table>
@@ -42,9 +41,9 @@ const SectionsBar : React.FC  = observer( () => {
                         <td style={{cursor: "pointer", border: '1px solid black'}} onClick={() => navigate(SECTION_ROUTE + '/' + section.id)}> {section.name}</td>
                         <td style={{border: '1px solid black', textAlign: 'center'}}> {section.discipline}</td>
                         <td style={{border: '1px solid black', textAlign: 'center'}}> 
-                        {new Date(section.updatedAt).toLocaleDateString('ru-RU', { year: 'numeric', month: 'numeric', day: 'numeric'}) + ' ' + new Date(section.updatedAt).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit'})}
+                        {new Date(section.updatedAt as Date).toLocaleDateString('ru-RU', { year: 'numeric', month: 'numeric', day: 'numeric'}) + ' ' + new Date(section.updatedAt as Date).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit'})}
                         </td>
-                        <td style={{border: '1px solid black', textAlign: 'center'}}> {sectionId_questionCount[section.id]} </td>
+                        <td style={{border: '1px solid black', textAlign: 'center'}}> {sectionId_questionCount[section.id ?? -1]} </td>
                     </tr>
                 )}
             </tbody>

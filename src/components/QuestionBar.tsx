@@ -1,13 +1,24 @@
 import { observer } from "mobx-react-lite";
-import React, { useContext } from "react";
-import { Container, Table } from "react-bootstrap";
+import React, { useContext, useEffect, useState } from "react";
+import Container from "react-bootstrap/Container";
+import Table from "react-bootstrap/Table";
 import { Context } from "..";
 import { useNavigate } from "react-router-dom";
 import { QUESTION_ROUTE } from "../utils/consts";
+import { fetchAnswersByQuestionId } from "../http/answersApi";
 
 const QuestionBar : React.FC  = observer( () => {
     const question_store = useContext(Context)?.question_store;
     const navigate = useNavigate();
+
+    const [questionId_answersCount, setQuestionId_answersCount] = useState<{[key: number]: number}>({});
+
+    useEffect(() => {
+        question_store?.questions.map(question => 
+            fetchAnswersByQuestionId(question.id ?? -1).then(data => {
+                setQuestionId_answersCount(prevState => ({...prevState, [question.id ?? -1]: data.length}));
+            }));
+    }, [question_store?.questions]);
 
     return (
         <Container> 
@@ -15,7 +26,6 @@ const QuestionBar : React.FC  = observer( () => {
                 <thead>
                     <tr>
                         <th style={{width: '1000px', border: '1px solid black'}}>Вопрос</th>
-                        <th style={{width: '200px', border: '1px solid black', textAlign: 'center'}}>Дисциплина</th>
                         <th style={{width: '200px', border: '1px solid black', textAlign: 'center'}}>Дата обновления</th>
                         <th style={{width: '200px', border: '1px solid black', textAlign: 'center'}}>Количество ответов</th>
                     </tr>
@@ -29,11 +39,10 @@ const QuestionBar : React.FC  = observer( () => {
                         onClick = {() => question_store.setSelectedQuestion(question)}
                         >
                             <td style={{width: '1000px', cursor: "pointer", border: '1px solid black'}} onClick={() => navigate(QUESTION_ROUTE + '/' + question.id)}> {question.header}</td>
-                            <td style={{width: '200px', border: '1px solid black', textAlign: 'center'}}> {question.sectionId}</td>
                             <td style={{width: '200px', border: '1px solid black', textAlign: 'center'}}> 
-                            {new Date(question.updatedAt).toLocaleDateString('ru-RU', { year: 'numeric', month: 'numeric', day: 'numeric'}) + ' ' + new Date(question.updatedAt).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit'})}
+                            {new Date(question?.updatedAt as Date).toLocaleDateString('ru-RU', { year: 'numeric', month: 'numeric', day: 'numeric'}) + ' ' + new Date(question?.updatedAt as Date).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit'})}
                             </td>
-                            <td style={{width: '100px', border: '1px solid black', textAlign: 'center'}}> {}</td>
+                            <td style={{width: '100px', border: '1px solid black', textAlign: 'center'}}> { questionId_answersCount[question.id ?? -1] } </td>
                         </tr>
                     )}
                 </tbody>

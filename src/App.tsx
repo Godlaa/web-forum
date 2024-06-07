@@ -4,12 +4,12 @@ import AppRouter from './components/AppRouter';
 import NavBar from './components/navbar';
 import { observer } from 'mobx-react-lite';
 import { Context } from '.';
-import { Spinner } from 'react-bootstrap';
+import  Spinner  from 'react-bootstrap/Spinner';
 import { check } from './http/userApi';
 
-const App : React.FC = observer( () => {
+const App : React.FC = () => {
 
-  const { user_store } = useContext(Context) || {};
+  const user_store = useContext(Context)?.user_store;
   const [loading, setLoading] = useState<boolean>(true);
   const token = localStorage.getItem('token')
 
@@ -29,7 +29,7 @@ const App : React.FC = observer( () => {
             })
             .finally(() => setLoading(false));
     }, 1000);
-  })
+  }, [user_store, token])
 
   if (loading){
       return <Spinner animation={"grow"} />
@@ -41,6 +41,6 @@ const App : React.FC = observer( () => {
       <AppRouter/>
     </BrowserRouter>  
   );
-});
+};
 
-export default App;
+export default observer(App);

@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import { Routes, Route } from "react-router-dom";
 import { authRoutes, publicRoutes } from "../routes";
 import { Context } from "../index";
+import { observer } from "mobx-react-lite";
 
 const AppRouter : React.FC  = () => {
     const user_store = useContext(Context)?.user_store;
@@ -18,4 +19,4 @@ const AppRouter : React.FC  = () => {
     );
 }
 
-export default AppRouter;
+export default observer(AppRouter);

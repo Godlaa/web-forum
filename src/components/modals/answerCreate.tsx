@@ -1,5 +1,8 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Dropdown, Button, Form, Modal } from "react-bootstrap";
+import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
+import Form from "react-bootstrap/Form";
+import Dropdown from "react-bootstrap/Dropdown";
 import PropTypes from "prop-types";
 import { Context } from "../..";
 import { createAnswer } from "../../http/answersApi";
@@ -22,7 +25,7 @@ const AnswerCreate: React.FC<{ show: boolean, onHide: () => void }> = observer (
     const addAnswer = () => {
         const userId = user_store?.user?.id;  
         if (userId) {
-            createAnswer({userId: userId, questionId: question_store?.selectedQuestion.id, text: text, likes: likes}).then(data => { setText(''); setLikes(0); });
+            createAnswer({userId: userId, questionId: question_store?.selectedQuestion.id ?? -1, text: text, likes: likes}).then(() => { setText(''); setLikes(0); });
             onHide();
         } else {
             console.log('user_store.user is not set or does not contain id');

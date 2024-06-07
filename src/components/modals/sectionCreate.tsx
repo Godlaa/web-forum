@@ -1,5 +1,7 @@
 import React, { useState } from "react";
-import { Button, Form, Modal } from "react-bootstrap";
+import Modal from "react-bootstrap/Modal";
+import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
 import PropTypes from "prop-types";
 import { createSection } from "../../http/sectionsApi";
 
@@ -14,7 +16,7 @@ const SectionCreate  : React.FC<ISectionCreateProps>  = ({ show, onHide }) => {
     const [discipline, setDiscipline] = useState('');
 
     const addSection = () => {
-      createSection({name: name, discipline: discipline}).then(data => { setDiscipline(''); setName(''); });
+      createSection({name: name, discipline: discipline}).then(() => { setDiscipline(''); setName(''); });
       onHide();
     }
 

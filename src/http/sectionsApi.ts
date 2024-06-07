@@ -1,6 +1,7 @@
+import { Section } from "../models";
 import { $authHost, $host } from "./index";
 
-export const createSection = async (section : {}) => {
+export const createSection = async (section : Section) => {
     const {data} = await $authHost.post('api/section', section);
     return data;
 }

@@ -1,25 +1,27 @@
 import { makeAutoObservable } from 'mobx';
+import { Answer, Question, Section } from '../models';
 
 
 
 export default class QuestionStore {
 
-    private _questions: any[] = [];
-    private _selectedQuestion: any = {};
-    private _answers: any[] = [];
-    private _sections: any[] = [];
-    private _selectedSection: any = {};
+    private _questions: Question[] = [];
+    private _selectedQuestion: Question;
+    private _answers: Answer[] = [];
+    private _sections: Section[] = [];
+    private _selectedSection: Section;
 
     constructor() {
         this._questions = [];
-        this._selectedQuestion = {};
-        this._selectedSection = {};
+        this._selectedQuestion = { id: 0, header: '', markers: [], isVip: false, userId: 0, sectionId: 0, createdAt: new Date(), updatedAt: new Date()
+         };
+        this._selectedSection = { id: 0, name: '', discipline: '' , createdAt: new Date(), updatedAt: new Date()};
         this._answers = [];
         this._sections = [];
         makeAutoObservable(this);
     }
 
-    setQuestions(questions : any[]){
+    setQuestions(questions : Question[]){
         this._questions = questions;
     }
 
@@ -27,7 +29,7 @@ export default class QuestionStore {
         return this._questions;
     }
 
-    setSelectedQuestion(question: any){
+    setSelectedQuestion(question: Question){
         this._selectedQuestion = question;
     }   
 
@@ -35,14 +37,14 @@ export default class QuestionStore {
         return this._selectedQuestion;
     }
 
-    setAnswers(answers: any[]){
+    setAnswers(answers: Answer[]){
         this._answers = answers;
     }
     get answers(){
         return this._answers;
     }
 
-    setSections(sections: any[]){
+    setSections(sections: Section[]){
         this._sections = sections;
     }
 
@@ -50,7 +52,7 @@ export default class QuestionStore {
         return this._sections;
     }
 
-    setSelectedSection(section: any){
+    setSelectedSection(section: Section){
         this._selectedSection = section;
     }   
 

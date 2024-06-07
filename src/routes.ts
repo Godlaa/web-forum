@@ -1,7 +1,7 @@
 import Admin from './pages/Admin';
 import Auth from './pages/Auth';
 import SectionsTable from './pages/SectionsTable';
-import Profile from './pages/Profile';
+import Profile from './pages/UserProfile';
 import Question from './pages/QuestionAnswersForm';
 import QuestionsTable from './pages/QuestionsTable';
 import { ADMIN_ROUTE, FORUM_ROUTE, LOGIN_ROUTE, PROFILE_ROUTE, QUESTION_ROUTE, REGISTRATION_ROUTE, SECTION_ROUTE } from './utils/consts';

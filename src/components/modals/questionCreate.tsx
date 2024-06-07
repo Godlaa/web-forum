@@ -1,5 +1,10 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Row, Col, Button, Dropdown, Form, Modal } from "react-bootstrap";
+import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
+import Form from "react-bootstrap/Form";
+import Dropdown from "react-bootstrap/Dropdown";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
 import { Context } from "../..";
 import PropTypes from "prop-types";
 import { fetchSections } from "../../http/sectionsApi";
@@ -26,7 +31,7 @@ const QuestionCreate  : React.FC<{ show: boolean, onHide: () => void }> = observ
     const addQuestion = () => {
         const userId = user_store?.user?.id;  
         if (userId) {
-            createQuestion({header: header, markers: markers, is_vip: isVip, userId: user_store.user.id, sectionId: question_store?.selectedSection.id}).then(data => { setHeader(''); setIsVip(false); setMarkers([]); });
+            createQuestion({header: header, markers: markers.map(marker => marker.title), isVip: isVip, userId: user_store.user.id ?? -1, sectionId: question_store?.selectedSection.id ?? -1}).then(() => { setHeader(''); setIsVip(false); setMarkers([]); });
             onHide();
         } else {
             console.log('user_store.user is not set or does not contain id');

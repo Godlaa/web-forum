@@ -1,7 +1,8 @@
+import { Question } from "../models";
 import { $host } from "./index";
 
-export const createQuestion = async (section: {}) => {
-    const {data} = await $host.post('api/question', section);
+export const createQuestion = async (question: Question) => {
+    const {data} = await $host.post('api/question', question);
     return data;
 }
 
@@ -19,3 +20,4 @@ export const fetchQuestionsBySectionId = async (id: number) => {
     const {data}  = await $host.get('api/question/?sectionId=' + id);
     return data;
 }
+
