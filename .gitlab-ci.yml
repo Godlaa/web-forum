@@ -4,9 +4,13 @@ stages:
 
 lint:
   stage: lint
-  image: alpine:latest
+  image: node:latest
   script:
-    - echo "Running linting process here..."
+    - npm install
+    - npm run lint
+  only:
+    - merge_requests
+    - branches
 
 build-push:
   stage: build-push
