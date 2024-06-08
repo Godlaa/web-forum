@@ -19,9 +19,9 @@ const NavBar : React.FC  = observer ( () => {
     }
     
     return (
-        <Navbar bg="dark" data-bs-theme="dark">
+        <Navbar style={{ backgroundColor: '#ce1531', fontFamily: 'PermianSansTypeface', fontSize: 24}}>
             <Container>
-            <NavLink to={FORUM_ROUTE} className="ms-5" style={{ color: "white", textDecoration: "none"}}> Парилка </NavLink>
+            <NavLink to={FORUM_ROUTE} className="ms-5" style={{ color: "white", textDecoration: "none"}}> Предбанник </NavLink>
             {user_store?.isAuth ? 
                 <Nav className="ms-auto" style={ {color: "white"} }>
                 <Button  variant={"outline-light"} onClick={() => navigate(PROFILE_ROUTE)}>Профиль</Button>
