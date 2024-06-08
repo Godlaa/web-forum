@@ -31,3 +31,4 @@ eslint:
   only:
     - merge_requests
     - branches
+
