@@ -5,9 +5,6 @@ services:
     image: web-forum-image
     ports:
       - "3000:3000"
-    environment:
-      - PG_PORT=5432
-      - PG_HOST=db
     networks:
       - dz-net
 
