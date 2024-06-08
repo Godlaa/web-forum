@@ -10,7 +10,7 @@ import { fetchOneUser } from "../http/userApi";
 import { fetchUserPersonalsByUserId } from "../http/userPersonalsApi";
 import { UserLikes } from "../models";
 import { createLike, fetchLikesByAnswerId, fetchLikesByUserId } from "../http/userLikesApi";
-import { FaHeart, FaHeartBroken, FaRegHeart } from 'react-icons/fa';
+import { FaHeart, FaHeartBroken } from 'react-icons/fa';
 
 const AnswerBar : React.FC  = observer(() => {
 
