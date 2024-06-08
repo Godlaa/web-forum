@@ -30,8 +30,6 @@ build-push:
 
   services:
     - docker:20.10.16-dint
-
-  stage: pack
   
   before_script:
     - export IMAGE=$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
