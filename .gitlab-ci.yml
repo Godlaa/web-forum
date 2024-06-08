@@ -3,7 +3,7 @@ stages:
   - build-push
 
 build-push:
-  dependencies:
+  needs:
     - lint
 
   rules:
