@@ -11,12 +11,19 @@ import { fetchUserPersonalsByUserId } from "../http/userPersonalsApi";
 import { UserLikes } from "../models";
 import { createLike, fetchLikesByAnswerId, fetchLikesByUserId } from "../http/userLikesApi";
 import { FaHeart, FaHeartBroken } from 'react-icons/fa';
+import { useNavigate } from "react-router-dom";
 
 const AnswerBar : React.FC  = observer(() => {
 
+    const navigate = useNavigate();
+
+    const redirectToProfile = (id: number) => {
+        navigate(`/profile/${id}`);
+    };
+    
     const question_store = useContext(Context)?.question_store;
     const user_store = useContext(Context)?.user_store;
-    const [authors, setAuthors] = useState<{[key: number]: number}>({});
+    const [authors, setAuthors] = useState<{[key: number]: {email: string, id: number}}>({});
     const [photos, setPhotos] = useState<{[key: number]: string}>({});
     const [likes, setLikes] = useState<{[key: number]: number}>({});
     const [userLikes, setUserLikes] = useState<{[key: number]: boolean}>({});
@@ -26,7 +33,7 @@ const AnswerBar : React.FC  = observer(() => {
     useEffect(() => {
         question_store?.answers.forEach(answer => {
             fetchOneUser(answer.userId ?? -1).then(data => {
-                setAuthors(prevState => ({...prevState, [answer.id ?? -1]: data.email}));
+                setAuthors(prevState => ({...prevState, [answer.id ?? -1]: {email: data.email, id: data.id}}));
             });
             fetchUserPersonalsByUserId(answer.userId ?? -1).then(data => {
                 if (data !== null) setPhotos(prevState => ({...prevState, [answer.id ?? -1]: data.avatar}));
@@ -67,10 +74,10 @@ const AnswerBar : React.FC  = observer(() => {
                                 <Container className="d-flex flex-nowrap justify-content-between align-items-center">
                                     <Row className="align-items-center me-4">
                                         <Col className="me-3">
-                                            Автор: {authors[answer.id ?? -1]}
+                                            Автор: {authors[answer.id ?? -1]?.email}
                                         </Col>
                                         Понравилось: {likes[answer.id ?? -1]}
-                                        <img className="ms-3" src={avatar_url + (photos[answer.id ?? -1] || 'default_avatar.jpg')} alt="avatar" style={{width: '75px', height: '75px', borderRadius: '50%'}}/>                                    </Row>
+                                        <img onClick={() => redirectToProfile(authors[answer.id ?? -1]?.id)} className="ms-3" src={avatar_url + (photos[answer.id ?? -1] || 'default_avatar.jpg')} alt="avatar" style={{width: '75px', height: '75px', borderRadius: '50%'}}/>                                    </Row>
                                 </Container>
                             </Accordion.Header>
 
@@ -87,7 +94,7 @@ const AnswerBar : React.FC  = observer(() => {
                                         variant="outline"
                                         className="border-0"
                                         >
-                                            <FaHeart  color="green"></FaHeart>
+                                            <FaHeart color="green"></FaHeart>
                                         </Button>
                                     :
                                         <Button

@@ -29,7 +29,7 @@ const UserProfile: React.FC = () => {
       if (user_store?.user?.id !== undefined) {
         const response = await fetchUserPersonalsByUserId(user_store?.user?.id);
         setUser(response === null ? user : response);
-      }
+      } 
     } catch (error) {
       console.error("Error fetching user data", error);
     }
@@ -39,7 +39,7 @@ const UserProfile: React.FC = () => {
     id: 0,
     name: "",
     surname: "",
-    age: 18,
+    age: 0,
     faculty: "",
     course: "",
     group: "",
