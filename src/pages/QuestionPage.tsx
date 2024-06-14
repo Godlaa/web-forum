@@ -8,26 +8,29 @@ import AnswerBar from "../components/AnswerBar";
 import { Context } from "..";
 import { createAnswer, fetchAnswersByQuestionId } from "../http/answersApi";
 import { observer } from "mobx-react-lite";
-import { useLocation } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { fetchOneQuestion } from "../http/questionsApi";
 
 const QuestionPage: React.FC = observer(() => {
   const { question_store } = useContext(Context) || {};
   const { user_store } = useContext(Context) || {};
-  const location = useLocation();
   const [text, setText] = useState("");
-  const questionIdFromUrl = Number.parseInt(
-    location.pathname.split("question/")[1]
-  );
+  const { id } = useParams<{ id: string }>();
 
-  useEffect(() => {
-    fetchAnswersByQuestionId(questionIdFromUrl).then(
+  const loadQuestionPage = (questionId: number) => {
+    fetchAnswersByQuestionId(questionId).then(
       (data) => question_store && question_store.setAnswers(data)
     );
-    fetchOneQuestion(questionIdFromUrl).then(
+    fetchOneQuestion(questionId).then(
       (data) => question_store && question_store.setSelectedQuestion(data)
     );
-  }, [questionIdFromUrl, question_store]);
+  };
+
+  useEffect(() => {
+    if (id) {
+      loadQuestionPage(parseInt(id));
+    }
+  }, [id, question_store]);
 
   const addAnswer = () => {
     const userId = user_store?.user?.id;
@@ -57,15 +60,17 @@ const QuestionPage: React.FC = observer(() => {
         <Container>
           <Col>
             Дата создания:{" "}
-            {
-              question_store?.selectedQuestion.createdAt?.toLocaleDateString("ru-RU", {
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-              hour: "2-digit",
-              minute: "2-digit",
-              second: "2-digit",
-            })}
+            {question_store?.selectedQuestion.createdAt?.toLocaleDateString(
+              "ru-RU",
+              {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+              }
+            )}
           </Col>
           {/* <Col>
                         Дата последнего обновления: {new Date(question_store.selectedQuestion.updatedAt).toLocaleDateString('ru-RU', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' })}
@@ -75,8 +80,7 @@ const QuestionPage: React.FC = observer(() => {
       </Row>
       <Row className="mt-5">
         <Col>
-          {Array.isArray(question_store?.answers) &&
-          question_store?.answers ? (
+          {Array.isArray(question_store?.answers) && question_store?.answers ? (
             <h2>Ответы</h2>
           ) : (
             <h2>Ответов пока нет</h2>

@@ -1,9 +1,9 @@
-import React from 'react'; 
-import { createContext } from 'react';
-import ReactDOM from 'react-dom/client';
-import App from './App';
-import UserStore from './store/UserStore';
-import QuestionStore from './store/QuestionStore';
+import React from "react";
+import { createContext } from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App";
+import UserStore from "./store/UserStore";
+import QuestionStore from "./store/QuestionStore";
 
 export type ContextType = {
   user_store: UserStore;
@@ -11,14 +11,15 @@ export type ContextType = {
 };
 
 export const Context = createContext<ContextType | null>(null);
-const root = ReactDOM.createRoot(document.getElementById('root')!);
+const root = ReactDOM.createRoot(document.getElementById("root")!);
 
 root.render(
-  <Context.Provider value={{
-    user_store: new UserStore(),
-    question_store: new QuestionStore(),
-  }}>
+  <Context.Provider
+    value={{
+      user_store: new UserStore(),
+      question_store: new QuestionStore(),
+    }}
+  >
     <App />
-  </Context.Provider>,     
+  </Context.Provider>
 );
-

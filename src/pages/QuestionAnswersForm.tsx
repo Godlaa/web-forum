@@ -8,31 +8,34 @@ import AnswerBar from "../components/AnswerBar";
 import { Context } from "..";
 import { createAnswer, fetchAnswersByQuestionId } from "../http/answersApi";
 import { observer } from "mobx-react-lite";
-import { useLocation } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { fetchOneQuestion } from "../http/questionsApi";
 import { fetchOneUser } from "../http/userApi";
 
-const QuestionPage : React.FC = observer(() => {
+const QuestionPage: React.FC = observer(() => {
   const { question_store } = useContext(Context) || {};
   const { user_store } = useContext(Context) || {};
-  const location = useLocation();
   const [text, setText] = useState("");
   const [author, setAuthor] = useState("");
-  const questionIdFromUrl = Number.parseInt(
-    location.pathname.split("question/")[1]
-  );
+  const { id } = useParams<{ id: string }>();
 
-  useEffect(() => {
-    fetchAnswersByQuestionId(questionIdFromUrl).then(
+  const loadAnswerPage = (questionId: number) => {
+    fetchAnswersByQuestionId(questionId).then(
       (data) => question_store && question_store.setAnswers(data)
     );
-    fetchOneQuestion(questionIdFromUrl).then((data) => {
+    fetchOneQuestion(questionId).then((data) => {
       question_store && question_store.setSelectedQuestion(data);
       fetchOneUser(question_store?.selectedQuestion.userId ?? -1).then((data) =>
         setAuthor(data.email)
       );
     });
-  }, [questionIdFromUrl, question_store, user_store]);
+  };
+
+  useEffect(() => {
+    if (id) {
+      loadAnswerPage(parseInt(id));
+    }
+  }, [id, question_store, user_store]);
 
   const addAnswer = () => {
     const userId = user_store?.user?.id;
@@ -61,8 +64,9 @@ const QuestionPage : React.FC = observer(() => {
         <Container>
           <Col>
             Дата создания:{" "}
-            {
-              new Date(question_store?.selectedQuestion.createdAt as Date).toLocaleDateString("ru-RU", {
+            {new Date(
+              question_store?.selectedQuestion.createdAt as Date
+            ).toLocaleDateString("ru-RU", {
               year: "numeric",
               month: "long",
               day: "numeric",
@@ -79,8 +83,7 @@ const QuestionPage : React.FC = observer(() => {
       </Row>
       <Row className="mt-5">
         <Col>
-          {Array.isArray(question_store?.answers) &&
-          question_store?.answers ? (
+          {Array.isArray(question_store?.answers) && question_store?.answers ? (
             <h2>Ответы</h2>
           ) : (
             <h2>Ответов пока нет</h2>

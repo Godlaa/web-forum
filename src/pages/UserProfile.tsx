@@ -18,9 +18,9 @@ import {
   updateUserPersonals,
 } from "../http/userPersonalsApi";
 import { UserPersonals } from "../models";
+import { avatar_url } from "../utils/consts";
 
 const UserProfile: React.FC = () => {
-  const avatar_url = "http://localhost:5000/";
   const user_store = useContext(Context)?.user_store;
   const [photoFile, setPhotoFile] = useState<File | null>(null);
 
@@ -29,7 +29,7 @@ const UserProfile: React.FC = () => {
       if (user_store?.user?.id !== undefined) {
         const response = await fetchUserPersonalsByUserId(user_store?.user?.id);
         setUser(response === null ? user : response);
-      } 
+      }
     } catch (error) {
       console.error("Error fetching user data", error);
     }

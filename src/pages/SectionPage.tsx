@@ -7,21 +7,25 @@ import QuestionBar from "../components/QuestionBar";
 import { observer } from "mobx-react-lite";
 import { Context } from "..";
 import { fetchQuestionsBySectionId } from "../http/questionsApi";
-import { useLocation } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 const SectionPage: React.FC = observer(() => {
   const { question_store } = useContext(Context) || {};
-  const location = useLocation();
-  const sectionFromUrl = Number.parseInt(
-    location.pathname.split("section/")[1]
-  );
 
-  useEffect(() => {
-    fetchQuestionsBySectionId(sectionFromUrl).then((data) => {
+  const { id } = useParams<{ id: string }>();
+
+  const loadQuestionBySection = (sectionId: number) => {
+    fetchQuestionsBySectionId(sectionId).then((data) => {
       if (question_store) {
         question_store.setQuestions(data.rows);
       }
     });
+  };
+
+  useEffect(() => {
+    if (id) {
+      loadQuestionBySection(parseInt(id));
+    }
   });
 
   return (
