@@ -1,0 +1,128 @@
+/* Base styles for form-container and forms */
+.form-container {
+  position: relative;
+  height: 380px; /* Adjust height based on your form size */
+  overflow: hidden;
+}
+
+.login-form,
+.register-form {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 105%;
+  transition: all 0.5s ease-in-out;
+}
+
+.login-form {
+  transform: translateX(0);
+}
+
+.register-form {
+  transform: translateX(100%);
+}
+
+.form-container.show-register .login-form {
+  transform: translateX(-100%);
+}
+
+.form-container.show-register .register-form {
+  transform: translateX(0);
+}
+
+.form-container.show-login .login-form {
+  transform: translateX(0);
+}
+
+.form-container.show-login .register-form {
+  transform: translateX(100%);
+}
+
+/* Button transitions */
+.nav-tabs .nav-link {
+  transition: white 0.5s ease-in-out, color 0.5s;
+}
+
+.nav-tabs .nav-link:hover {
+  outline: none;
+  border: none;
+}
+
+.auth-toggle-button {
+  width: 300px;
+  height: 60px;
+  position: relative;
+  border-radius: 30px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.auth-button-wrapper {
+  width: 200%;
+  height: 100%;
+  display: flex;
+  transition: all 0.3s ease;
+}
+
+.auth-button {
+  width: 50%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  font-family: "Arial", sans-serif;
+  transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+.auth-login {
+  background: #f1f2f6;
+  color: #000;
+}
+
+.auth-register {
+  background: #ff6b81;
+  color: #fff;
+}
+
+.login-active .auth-login {
+  background: #f1f2f6;
+  color: #000;
+}
+
+.login-active .auth-register {
+  background: #ff4757;
+  color: #fff;
+}
+
+.register-active .auth-login {
+  background: #ff4757;
+  color: #fff;
+}
+
+.register-active .auth-register {
+  background: #f1f2f6;
+  color: #000;
+}
+
+.login-active {
+  transform: translateX(100%);
+}
+
+.register-active {
+  transform: translateX(0%);
+}
+
+.form-text {
+  font-family: "STIX Two Text", serif;
+  color: white; /* Цвет текста */
+  font-size: 24px;
+  text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000,
+    -1px 1px 0 #000; /* Тени для обводки */
+  position: relative;
+  text-align: center;
+  z-index: 2;
+}

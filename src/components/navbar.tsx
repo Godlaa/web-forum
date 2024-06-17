@@ -12,6 +12,7 @@ import {
 } from "../utils/consts";
 import { observer } from "mobx-react-lite";
 import { useNavigate, NavLink } from "react-router-dom";
+import "../css/navbar.css";
 
 const NavBar: React.FC = observer(() => {
   const user_store = useContext(Context)?.user_store;
@@ -24,37 +25,41 @@ const NavBar: React.FC = observer(() => {
   };
 
   return (
-    <Navbar
-      style={{
-        backgroundColor: "#ce1531",
-        fontFamily: "PermianSansTypeface",
-        fontSize: 24,
-      }}
-    >
+    <Navbar className="navbar-body d-flex justify-content-between align-items-start">
       <Container>
         <NavLink
           to={FORUM_ROUTE}
-          className="ms-5"
-          style={{ color: "white", textDecoration: "none" }}
+          className="navbar-btn ms-5 mt-4"
+          style={{
+            color: "white",
+            textDecoration: "none",
+            fontFamily: "STIX Two Text-Regular",
+          }}
         >
-          {" "}
-          Предбанник{" "}
+          Баня
         </NavLink>
         {user_store?.isAuth ? (
-          <Nav className="ms-auto" style={{ color: "white" }}>
+          <Nav className="mt-4" style={{ color: "white" }}>
             <Button
+              className="navbar-btn mx-2 mt-4"
               variant={"outline-light"}
               onClick={() => navigate(PROFILE_ROUTE)}
+              style={{
+                textDecoration: "none",
+              }}
             >
               Профиль
             </Button>
             {user_store?.user.role === "ADMIN" ? (
               <Button
-                className="mx-2"
+                className="navbar-btn mx-2 mt-4"
                 variant={"outline-light"}
                 onClick={() => navigate(ADMIN_ROUTE)}
+                style={{
+                  textDecoration: "none",
+                }}
               >
-                Админ панель
+                Админ
               </Button>
             ) : (
               <div></div>
@@ -62,19 +67,24 @@ const NavBar: React.FC = observer(() => {
             <Button
               variant={"outline-light"}
               onClick={() => logout()}
-              className="ms-2"
+              className="navbar-btn ms-2 mt-4"
+              style={{
+                textDecoration: "none",
+              }}
             >
               Выйти
             </Button>
           </Nav>
         ) : (
-          <Nav className="ms-auto" style={{ color: "white" }}>
-            <Button
-              variant={"outline-light"}
-              onClick={() => navigate(LOGIN_ROUTE)}
-            >
-              Авторизация
-            </Button>
+          <Nav className="ms-auto mt-4">
+            <div className="navbar-button-container">
+              <button
+                className="navbar-button"
+                onClick={() => navigate(LOGIN_ROUTE)}
+              >
+                <span className="navbar-button-text">Вход</span>
+              </button>
+            </div>
           </Nav>
         )}
       </Container>
