@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
@@ -17,13 +17,24 @@ const Auth: React.FC = observer(() => {
   const isLogin = location.pathname === LOGIN_ROUTE;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [reapeatPassword, setReapeatPassword] = useState("");
   const user_store = useContext(Context)?.user_store;
   const navigate = useNavigate();
   const [toggled, setToggled] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
 
-  const toggleAuth = () => {
-    setToggled(!toggled);
-  };
+  useEffect(() => {
+    const rememberedEmail = localStorage.getItem("rememberedEmail");
+    const rememberedPassword = localStorage.getItem("rememberedPassword");
+    if (rememberedEmail) {
+      setEmail(rememberedEmail);
+      setRememberMe(true);
+    }
+    if (rememberedPassword) {
+      setPassword(rememberedPassword);
+      setRememberMe(true);
+    }
+  }, []);
 
   const click = async () => {
     try {
@@ -31,7 +42,17 @@ const Auth: React.FC = observer(() => {
       if (isLogin) {
         data = await login(email, password);
       } else {
+        if (password !== reapeatPassword) {
+          return alert("Пароли не совпадают");
+        }
         data = await registration(email, password);
+      }
+      if (rememberMe) {
+        localStorage.setItem("rememberedEmail", email);
+        localStorage.setItem("rememberedPassword", password);
+      } else {
+        localStorage.removeItem("rememberedEmail");
+        localStorage.removeItem("rememberedPassword");
       }
       user_store?.setUser(data);
       user_store?.setIsAuth(true);
@@ -127,6 +148,9 @@ const Auth: React.FC = observer(() => {
                   <Form.Control
                     type="email"
                     placeholder="Введите email..."
+                    autoComplete="email"
+                    id="log-email"
+                    name="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                   />
@@ -139,21 +163,70 @@ const Auth: React.FC = observer(() => {
                   <Form.Control
                     type="password"
                     placeholder="Введите пароль..."
+                    autoComplete="current-password"
+                    id="log-password"
+                    name="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
                 </Form.Group>
+                <Form.Group
+                  controlId="formBasicPassword"
+                  className="mt-3 form-text text-start"
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    fontSize: "20px",
+                  }}
+                >
+                  <div>
+                    <label>
+                      <input
+                        className="mx-2"
+                        type="checkbox"
+                        checked={rememberMe}
+                        onChange={(e) => setRememberMe(e.target.checked)}
+                      />
+                      Запомнить меня
+                    </label>
+                  </div>
+                </Form.Group>
                 <div className="d-flex justify-content-center">
                   <Button
-                    className="mt-4 text-center d-block mb-2 p-3 rounded form-text"
+                    variant="danger"
+                    className="form-text mt-3 text-center"
                     onClick={click}
                     style={{
-                      backgroundColor: "#A52532",
+                      backgroundColor: "#C62E3E",
                       border: "none",
+                      borderRadius: "50px",
+                      position: "relative",
+                      paddingRight: "20px",
+                      fontSize: "35px",
                       width: "400px",
                     }}
                   >
                     Войти
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="48"
+                      height="48"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      style={{
+                        position: "absolute",
+                        right: "15px",
+                        top: "50%",
+                        transform: "translateY(-50%)",
+                      }}
+                    >
+                      <line x1="5" y1="12" x2="19" y2="12" />
+                      <polyline points="12 5 19 12 12 19" />
+                    </svg>
                   </Button>
                 </div>
                 <NavLink className="text-center d-block mt-2" to={FORUM_ROUTE}>
@@ -169,6 +242,9 @@ const Auth: React.FC = observer(() => {
                   <Form.Control
                     type="email"
                     placeholder="Введите email..."
+                    autoComplete="email"
+                    id="reg-email"
+                    name="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                   />
@@ -182,6 +258,9 @@ const Auth: React.FC = observer(() => {
                     type="password"
                     placeholder="Введите пароль..."
                     value={password}
+                    autoComplete="new-password"
+                    id="reg-password"
+                    name="password"
                     onChange={(e) => setPassword(e.target.value)}
                   />
                 </Form.Group>
@@ -193,22 +272,49 @@ const Auth: React.FC = observer(() => {
                   <Form.Control
                     type="password"
                     placeholder="Введите пароль повторно..."
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    value={reapeatPassword}
+                    autoComplete="new-password"
+                    id="repeat-password"
+                    name="password"
+                    onChange={(e) => setReapeatPassword(e.target.value)}
                   />
                 </Form.Group>
                 <div className="d-flex justify-content-center">
                   <Button
                     variant="danger"
-                    className="mt-4 text-center mb-2 p-3 rounded"
+                    className="form-text mt-3 text-center"
                     onClick={click}
                     style={{
-                      backgroundColor: "#A52532",
+                      backgroundColor: "#C62E3E",
                       border: "none",
                       borderRadius: "50px",
+                      position: "relative",
+                      paddingRight: "20px",
+                      fontSize: "35px",
+                      width: "400px",
                     }}
                   >
-                    Зарегистрироваться
+                    Регистрация
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="48"
+                      height="48"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      style={{
+                        position: "absolute",
+                        right: "15px",
+                        top: "50%",
+                        transform: "translateY(-50%)",
+                      }}
+                    >
+                      <line x1="5" y1="12" x2="19" y2="12" />
+                      <polyline points="12 5 19 12 12 19" />
+                    </svg>
                   </Button>
                 </div>
               </Form>
