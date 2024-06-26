@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
-import Dropdown from "react-bootstrap/Dropdown";
 import PropTypes from "prop-types";
 import { Context } from "../..";
 import { createAnswer } from "../../http/answersApi";
@@ -14,7 +13,6 @@ const AnswerCreate: React.FC<{ show: boolean; onHide: () => void }> = observer(
     const question_store = useContext(Context)?.question_store;
     const user_store = useContext(Context)?.user_store;
     const [text, setText] = useState("");
-    const [likes, setLikes] = useState(0);
 
     useEffect(() => {
       if (question_store) {
@@ -29,10 +27,9 @@ const AnswerCreate: React.FC<{ show: boolean; onHide: () => void }> = observer(
           userId: userId,
           questionId: question_store?.selectedQuestion.id ?? -1,
           text: text,
-          likes: likes,
+          likes: 0,
         }).then(() => {
           setText("");
-          setLikes(0);
         });
         onHide();
       } else {
@@ -50,42 +47,19 @@ const AnswerCreate: React.FC<{ show: boolean; onHide: () => void }> = observer(
         <Modal.Body>
           <Form>
             <Form.Control
-              placeholder={"Введите ответ"}
               value={text}
               onChange={(e) => setText(e.target.value)}
+              as="textarea"
+              rows={3}
             />
-            <Form.Control
-              className="mt-3"
-              placeholder={"Количество лайков"}
-              value={likes}
-              onChange={(e) => setLikes(Number(e.target.value))}
-            />
-            <Dropdown className="mt-3">
-              <Dropdown.Toggle>
-                {" "}
-                {question_store?.selectedQuestion.header || "Выберите вопрос"}
-              </Dropdown.Toggle>
-              <Dropdown.Menu>
-                {question_store?.questions.map((question) => (
-                  <Dropdown.Item
-                    key={question.id}
-                    onClick={() =>
-                      question_store?.setSelectedQuestion(question)
-                    }
-                  >
-                    {question.header}
-                  </Dropdown.Item>
-                ))}
-              </Dropdown.Menu>
-            </Dropdown>
           </Form>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="outline-danger" onClick={onHide}>
             Закрыть
           </Button>
-          <Button variant="outline-success" onClick={addAnswer}>
-            Добавить
+          <Button type="submit" variant="outline-success" onClick={addAnswer}>
+            Ответить
           </Button>
         </Modal.Footer>
       </Modal>

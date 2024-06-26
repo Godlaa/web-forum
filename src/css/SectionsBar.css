@@ -1,0 +1,46 @@
+.container-bg {
+  background-color: #f8f9fa;
+  border-radius: 0.5rem;
+}
+
+.header-bg {
+  background-color: #b22222;
+  color: white;
+  padding: 1rem;
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+}
+
+.search-bar {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.question-button {
+  background-color: #c62e3e;
+  border: none;
+  border-radius: 50px;
+  font-size: 20px;
+  width: auto;
+}
+
+.list-group-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #c62e3e;
+  color: white;
+  margin-bottom: 0.5rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+.shadow-text {
+  font-family: "STIX Two Text", serif;
+  color: white; /* Цвет текста */
+  font-size: 28px;
+  text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000,
+    -1px 1px 0 #000; /* Тени для обводки */
+}

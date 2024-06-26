@@ -8,157 +8,220 @@ import Col from "react-bootstrap/Col";
 import { Context } from "..";
 import { fetchOneUser } from "../http/userApi";
 import { fetchUserPersonalsByUserId } from "../http/userPersonalsApi";
-import { UserLikes } from "../models";
+import { UserLikes, UserPersonals } from "../models";
 import {
   createLike,
   fetchLikesByAnswerId,
   fetchLikesByUserId,
 } from "../http/userLikesApi";
 import { FaHeart, FaHeartBroken } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+import { Form, useNavigate } from "react-router-dom";
 import { PROFILE_ROUTE, avatar_url } from "../utils/consts";
+import { deleteAnswerById } from "../http/answersApi";
+import "../css/AnswerBar.css";
+import { Card, FormLabel } from "react-bootstrap";
 
-const AnswerBar: React.FC = observer(() => {
-  const navigate = useNavigate();
+interface ChildComponentProps {
+  reloadAnswers: () => void;
+}
 
-  const redirectToProfile = (sectionId: number) => {
-    navigate(PROFILE_ROUTE + `/${sectionId}`);
-  };
+const AnswerBar: React.FC<ChildComponentProps> = observer(
+  ({ reloadAnswers }) => {
+    const navigate = useNavigate();
 
-  const question_store = useContext(Context)?.question_store;
-  const user_store = useContext(Context)?.user_store;
-  const [authors, setAuthors] = useState<{
-    [key: number]: { email: string; id: number };
-  }>({});
-  const [photos, setPhotos] = useState<{ [key: number]: string }>({});
-  const [likes, setLikes] = useState<{ [key: number]: number }>({});
-  const [userLikes, setUserLikes] = useState<{ [key: number]: boolean }>({});
-  const [reload, setReload] = useState<boolean>(false);
+    const redirectToProfile = (profileId: number) => {
+      user_store?.user.id === profileId
+        ? navigate(PROFILE_ROUTE)
+        : navigate(PROFILE_ROUTE + `/${profileId}`);
+    };
 
-  useEffect(() => {
-    question_store?.answers.forEach((answer) => {
-      fetchOneUser(answer.userId ?? -1).then((data) => {
-        setAuthors((prevState) => ({
-          ...prevState,
-          [answer.id ?? -1]: { email: data.email, id: data.id },
-        }));
-      });
-      fetchUserPersonalsByUserId(answer.userId ?? -1).then((data) => {
-        if (data !== null)
-          setPhotos((prevState) => ({
+    const question_store = useContext(Context)?.question_store;
+    const user_store = useContext(Context)?.user_store;
+    const [authors, setAuthors] = useState<{
+      [key: number]: { email: string; id: number };
+    }>({});
+    const [photos, setPhotos] = useState<{ [key: number]: string }>({});
+    const [likes, setLikes] = useState<{ [key: number]: number }>({});
+    const [userLikes, setUserLikes] = useState<{ [key: number]: boolean }>({});
+    const [userPersonal, setUserPersonal] = useState<{
+      [key: number]: UserPersonals;
+    }>({});
+    const [reload, setReload] = useState<boolean>(false);
+
+    useEffect(() => {
+      question_store?.answers.forEach((answer) => {
+        fetchOneUser(answer.userId ?? -1).then((data) => {
+          setAuthors((prevState) => ({
             ...prevState,
-            [answer.id ?? -1]: data.avatar,
+            [answer.id ?? -1]: { email: data.email, id: data.id },
           }));
-        else
-          setPhotos((prevState) => ({
+        });
+        fetchUserPersonalsByUserId(answer.userId ?? -1).then((data) => {
+          if (data !== null) {
+            setPhotos((prevState) => ({
+              ...prevState,
+              [answer.id ?? -1]: data.avatar,
+            }));
+            setUserPersonal((prevState) => ({
+              ...prevState,
+              [answer.id ?? -1]: data,
+            }));
+          } else
+            setPhotos((prevState) => ({
+              ...prevState,
+              [answer.id ?? -1]: "default_avatar.jpg",
+            }));
+        });
+        fetchLikesByAnswerId(answer.id ?? -1).then((data) => {
+          setLikes((prevState) => ({
             ...prevState,
-            [answer.id ?? -1]: "default_avatar.jpg",
+            [answer.id ?? -1]: data.length,
           }));
+        });
       });
-      fetchLikesByAnswerId(answer.id ?? -1).then((data) => {
-        setLikes((prevState) => ({
-          ...prevState,
-          [answer.id ?? -1]: data.length,
-        }));
+      setUserLikes({});
+      fetchLikesByUserId(user_store?.user.id ?? -1).then((data) => {
+        data.forEach((like: UserLikes) => {
+          setUserLikes((prevState) => ({
+            ...prevState,
+            [like.answerId ?? -1]: like.is_liked ?? false,
+          }));
+        });
       });
-    });
-    setUserLikes({});
-    fetchLikesByUserId(user_store?.user.id ?? -1).then((data) => {
-      data.forEach((like: UserLikes) => {
-        setUserLikes((prevState) => ({
-          ...prevState,
-          [like.answerId ?? -1]: like.is_liked ?? false,
-        }));
-      });
-    });
-    setReload(false);
-  }, [question_store?.answers, reload]);
+      setReload(false);
+    }, [question_store?.answers, reload]);
 
-  const likeAnswer = (answerId: number | undefined) => {
-    if (answerId !== undefined) {
-      const like: UserLikes = {
-        userId: user_store?.user.id ?? -1,
-        answerId: answerId,
-        is_liked: true,
-      };
-      createLike(like);
-    }
-  };
+    const likeAnswer = (answerId: number | undefined) => {
+      if (answerId !== undefined) {
+        const like: UserLikes = {
+          userId: user_store?.user.id ?? -1,
+          answerId: answerId,
+          is_liked: true,
+        };
+        createLike(like);
+      }
+    };
 
-  return (
-    <Container>
-      <Row>
-        <Col>
-          <Accordion className="mt-3" defaultActiveKey="0">
+    const deleteAnswer = (answerId: number) => {
+      if (answerId) {
+        deleteAnswerById(answerId);
+      }
+    };
+
+    return (
+      <Container>
+        <Row>
+          <Col>
             {question_store?.answers.map((answer) => (
-              <Accordion.Item
+              <Card
                 key={answer.id}
-                eventKey={answer.id?.toString() ?? "-1"}
+                className="mb-3"
+                style={{
+                  borderBottomRightRadius: "20px",
+                  borderBottomLeftRadius: "20px",
+                }}
               >
-                <Accordion.Header>
-                  <Container className="d-flex flex-nowrap justify-content-between align-items-center">
-                    <Row className="align-items-center me-4">
-                      <Col className="me-3">
-                        Автор: {authors[answer.id ?? -1]?.email}
-                      </Col>
+                <Card.Header className="align-items-center">
+                  <Row className="align-items-center me-4">
+                    <img
+                      onClick={() =>
+                        redirectToProfile(authors[answer.id ?? -1]?.id)
+                      }
+                      className="ms-3"
+                      src={
+                        avatar_url +
+                        (photos[answer.id ?? -1] || "default_avatar.jpg")
+                      }
+                      alt="avatar"
+                      style={{
+                        width: "70px",
+                        height: "70px",
+                        borderRadius: "50%",
+                      }}
+                    />
+                    <Col className="me-3">
+                      {userPersonal[answer.id ?? -1]?.name ??
+                        authors[answer.id ?? -1]?.email}{" "}
+                      {userPersonal[answer.id ?? -1]?.faculty ?? ""}{" "}
+                      {userPersonal[answer.id ?? -1]?.course ?? ""} курс
+                    </Col>
+                    <Col className="d-flex align-items-center justify-content-end">
+                      {userLikes[answer.id ?? -1] === true ? (
+                        <Button
+                          onClick={() => {
+                            likeAnswer(answer.id);
+                            setReload(true);
+                          }}
+                          variant="outline"
+                          className="border-0 me-2"
+                        >
+                          <FaHeart color="green"></FaHeart>
+                        </Button>
+                      ) : (
+                        <Button
+                          onClick={() => {
+                            likeAnswer(answer.id);
+                            setReload(true);
+                          }}
+                          variant="outline"
+                          className="border-0 me-2"
+                        >
+                          <FaHeartBroken color="red"></FaHeartBroken>
+                        </Button>
+                      )}
                       Понравилось: {likes[answer.id ?? -1]}
-                      <img
-                        onClick={() =>
-                          redirectToProfile(authors[answer.id ?? -1]?.id)
-                        }
-                        className="ms-3"
-                        src={
-                          avatar_url +
-                          (photos[answer.id ?? -1] || "default_avatar.jpg")
-                        }
-                        alt="avatar"
-                        style={{
-                          width: "75px",
-                          height: "75px",
-                          borderRadius: "50%",
-                        }}
-                      />{" "}
-                    </Row>
-                  </Container>
-                </Accordion.Header>
-
-                <Accordion.Body className="align-items-center">
-                  <Container className="d-flex justify-content-between align-items-center">
-                    <Row className="d-flex">
-                      <Col className="ms-2">{answer.text}</Col>
-                    </Row>
-                    {userLikes[answer.id ?? -1] === true ? (
+                    </Col>
+                  </Row>
+                </Card.Header>
+                <Card.Body
+                  style={{
+                    backgroundColor: "#ADADAD",
+                    borderBottomRightRadius: "20px",
+                    borderBottomLeftRadius: "20px",
+                  }}
+                >
+                  <div
+                    className="align-items-center justify-content-between"
+                    style={{
+                      backgroundColor: "#E5E5E5",
+                      borderRadius: "10px",
+                      paddingLeft: "10px",
+                    }}
+                  >
+                    {answer.text}
+                  </div>
+                  {user_store?.user.role === "ADMIN" ? (
+                    <Row
+                      className="d-flex justify-content-end mt-1"
+                      style={{ height: "15px" }}
+                    >
                       <Button
-                        onClick={() => {
-                          likeAnswer(answer.id);
-                          setReload(!reload);
-                        }}
                         variant="outline"
-                        className="border-0"
-                      >
-                        <FaHeart color="green"></FaHeart>
-                      </Button>
-                    ) : (
-                      <Button
                         onClick={() => {
-                          likeAnswer(answer.id);
-                          setReload(!reload);
+                          deleteAnswer(answer.id ?? -1);
+                          reloadAnswers();
                         }}
-                        variant="outline"
-                        className="border-0"
+                        className="d-flex align-items-center justify-content-center mx-4"
+                        style={{ width: "30px", height: "30px" }}
                       >
-                        <FaHeartBroken color="red"></FaHeartBroken>
+                        <img
+                          security="true"
+                          src="https://cdn.icon-icons.com/icons2/3247/PNG/512/xmark_icon_198582.png"
+                          alt="xmark"
+                          width="30px"
+                          height="30px"
+                        />
                       </Button>
-                    )}
-                  </Container>
-                </Accordion.Body>
-              </Accordion.Item>
+                    </Row>
+                  ) : null}
+                </Card.Body>
+              </Card>
             ))}
-          </Accordion>
-        </Col>
-      </Row>
-    </Container>
-  );
-});
+          </Col>
+        </Row>
+      </Container>
+    );
+  }
+);
 
 export default AnswerBar;

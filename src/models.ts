@@ -4,7 +4,7 @@ export interface UserPersonals {
   surname: string;
   age: number;
   faculty: string;
-  course: string;
+  course: number;
   group: string;
   avatar: string;
   createdAt?: Date;

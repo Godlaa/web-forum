@@ -10,10 +10,12 @@ import {
   FORUM_ROUTE,
   LOGIN_ROUTE,
   PROFILE_ROUTE,
+  QUESTION_CREATE_ROUTE,
   QUESTION_ROUTE,
   REGISTRATION_ROUTE,
   SECTION_ROUTE,
 } from "./utils/consts";
+import QuestionCreatePage from "./pages/QuestionCreatePage";
 
 export const authRoutes = [
   {
@@ -50,5 +52,9 @@ export const publicRoutes = [
   {
     path: SECTION_ROUTE + "/:id",
     Component: QuestionsTable,
+  },
+  {
+    path: QUESTION_CREATE_ROUTE + "/:id",
+    Component: QuestionCreatePage,
   },
 ];

@@ -1,13 +1,10 @@
 import React, { useContext, useEffect } from "react";
 import Container from "react-bootstrap/Container";
-import FormLabel from "react-bootstrap/FormLabel";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
 import SectionsBar from "../components/SectionsBar";
 import { observer } from "mobx-react-lite";
 import { Context } from "..";
 import { fetchSections } from "../http/sectionsApi";
-
+import "../css/SectionsPage.css";
 const Forum: React.FC = observer(() => {
   const question_store = useContext(Context)?.question_store;
 
@@ -20,13 +17,8 @@ const Forum: React.FC = observer(() => {
   });
 
   return (
-    <Container className="mt-5">
-      <FormLabel className="mb-3">Разделы</FormLabel>
-      <Row>
-        <Col>
-          <SectionsBar />
-        </Col>
-      </Row>
+    <Container className="forum-body mt-5">
+      <SectionsBar />
     </Container>
   );
 });

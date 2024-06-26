@@ -20,3 +20,16 @@ export const fetchQuestionsBySectionId = async (id: number) => {
   const { data } = await $host.get("api/question/?sectionId=" + id);
   return data;
 };
+
+export const fetchQuestionsByUserId = async (userId: number) => {
+  const { data } = await $host.get("api/question/?userId=" + userId);
+  return data;
+};
+
+export const deleteQuestionById = async (id: number) => {
+  try {
+    await $host.delete("api/question/" + id);
+  } catch (error) {
+    console.error("Bad delete question", error);
+  }
+};

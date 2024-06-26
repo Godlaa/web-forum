@@ -48,7 +48,7 @@ const NavBar: React.FC = observer(() => {
               </button>
             </div>
 
-            {user_store?.user.role === "ADMIN" ? (
+            {/* {user_store?.user.role === "ADMIN" ? (
               <div className="navbar-button-container">
                 <button
                   className="navbar-button"
@@ -59,7 +59,7 @@ const NavBar: React.FC = observer(() => {
               </div>
             ) : (
               <div></div>
-            )}
+            )} */}
             <div className="navbar-button-container">
               <button className="navbar-button" onClick={() => logout()}>
                 <span className="navbar-button-text">Выход</span>

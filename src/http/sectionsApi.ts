@@ -15,3 +15,11 @@ export const fetchOneSection = async (id: number) => {
   const { data } = await $host.get("api/section/" + id);
   return data;
 };
+
+export const deleteSectionById = async (id: number) => {
+  try {
+    await $host.delete("api/section/" + id);
+  } catch (error) {
+    console.error("Bad delete section", error);
+  }
+};

@@ -36,3 +36,16 @@ export const fetchAnswersByQuestionId = async (id: number) => {
     console.error("Error fetching answers by question id", error);
   }
 };
+
+export const fetchAnswersByUserId = async (userId: number) => {
+  const { data } = await $host.get("api/answer/?userId=" + userId);
+  return data;
+};
+
+export const deleteAnswerById = async (id: number) => {
+  try {
+    await $host.delete("api/answer/" + id);
+  } catch (error) {
+    console.error("Bad delete answer", error);
+  }
+};

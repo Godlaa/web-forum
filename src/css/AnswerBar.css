@@ -1,0 +1,9 @@
+.accordion .card .collapse.show {
+  display: block;
+}
+
+.accordion .card .collapse {
+  display: block !important;
+  visibility: visible;
+  height: auto !important;
+}

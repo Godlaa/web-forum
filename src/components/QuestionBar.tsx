@@ -1,23 +1,43 @@
 import { observer } from "mobx-react-lite";
 import React, { useContext, useEffect, useState } from "react";
 import Container from "react-bootstrap/Container";
-import Table from "react-bootstrap/Table";
 import { Context } from "..";
 import { useNavigate } from "react-router-dom";
-import { QUESTION_ROUTE } from "../utils/consts";
+import {
+  FORUM_ROUTE,
+  QUESTION_CREATE_ROUTE,
+  QUESTION_ROUTE,
+} from "../utils/consts";
 import { fetchAnswersByQuestionId } from "../http/answersApi";
+import { ListGroup, Col, Row, Button } from "react-bootstrap";
+import SearchLine from "./questionSearchQuestions";
+import { deleteQuestionById } from "../http/questionsApi";
+import { Question } from "../models";
 
 const QuestionBar: React.FC = observer(() => {
   const question_store = useContext(Context)?.question_store;
+  const user_store = useContext(Context)?.user_store;
   const navigate = useNavigate();
 
-  const [questionId_answersCount, setQuestionId_answersCount] = useState<{
-    [key: number]: number;
-  }>({});
+  const [suggestions, setSuggestions] = useState<Question[]>([]);
+
+  const handleSuggestionsChange = (newSuggestions: Question[]) => {
+    setSuggestions(newSuggestions);
+  };
 
   const redirectToQuestion = (questionId: number) => {
     navigate(QUESTION_ROUTE + `/${questionId}`);
   };
+
+  const deleteQuestion = (questionId: number) => {
+    if (questionId) {
+      deleteQuestionById(questionId);
+    }
+  };
+
+  const [questionId_answersCount, setQuestionId_answersCount] = useState<{
+    [key: number]: number;
+  }>({});
 
   useEffect(() => {
     question_store?.questions.map((question) =>
@@ -31,87 +51,150 @@ const QuestionBar: React.FC = observer(() => {
   }, [question_store?.questions]);
 
   return (
-    <Container>
-      <Table>
-        <thead>
-          <tr>
-            <th style={{ width: "1000px", border: "1px solid black" }}>
-              Вопрос
-            </th>
-            <th
+    <Container
+      className="container-bg mt-5"
+      style={{ backgroundColor: "#E5E5E5", border: "1px solid gray" }}
+    >
+      <Row className="shadow-text header-bg d-flex align-items-center">
+        <Col className="ms-4">
+          <h1>{question_store?.selectedSection.name ?? ""}</h1>
+        </Col>
+        <Col xs="auto">
+          <img
+            security="true"
+            src="https://cdn.icon-icons.com/icons2/1304/PNG/512/book_86005.png"
+            alt="book"
+            width="80"
+            height="80"
+            className="mx-5"
+          />
+        </Col>
+      </Row>
+      <Row className="search-bar ms-3">
+        <Col xs="auto">
+          <svg
+            onClick={() => navigate(FORUM_ROUTE)}
+            style={{ cursor: "pointer" }}
+            xmlns="http://www.w3.org/2000/svg"
+            width="3em"
+            height="3em"
+            viewBox="0 0 256 256"
+          >
+            <path
+              fill="currentColor"
+              d="M228 128a12 12 0 0 1-12 12H69l51.52 51.51a12 12 0 0 1-17 17l-72-72a12 12 0 0 1 0-17l72-72a12 12 0 0 1 17 17L69 116h147a12 12 0 0 1 12 12"
+            />
+          </svg>
+        </Col>
+        <Col>
+          <SearchLine
+            onSuggestionsChange={handleSuggestionsChange}
+            placeholder="Поиск вопроса..."
+          />
+        </Col>
+        <Col xs="auto">
+          <Button
+            variant="danger"
+            className="shadow-text question-button mx-5"
+            onClick={() =>
+              navigate(
+                QUESTION_CREATE_ROUTE + "/" + question_store?.selectedSection.id
+              )
+            }
+            style={{
+              backgroundColor: "#C62E3E",
+              border: "none",
+              borderRadius: "40px",
+              position: "relative",
+              paddingRight: "20px",
+              fontSize: "35px",
+              width: "300px",
+            }}
+          >
+            Задать вопрос
+          </Button>
+        </Col>
+      </Row>
+      <ListGroup className="mt-3 shadow-text d-flex">
+        {suggestions.map((question, index) =>
+          user_store?.user.role === "ADMIN" ? (
+            <Row key={index} className="d-flex align-items-center ms-3">
+              <Button
+                variant="outline"
+                className="d-flex align-items-center justify-content-center"
+                style={{ width: "40px", height: "40px" }}
+              >
+                <img
+                  security="true"
+                  src="https://cdn.icon-icons.com/icons2/569/PNG/512/pen-black-diagonal-symbol-of-writing-tool_icon-icons.com_54470.png"
+                  alt="pen"
+                  width="40px"
+                  height="40px"
+                />
+              </Button>
+              <Button
+                variant="outline"
+                className="d-flex align-items-center justify-content-center mx-4"
+                onClick={() => deleteQuestion(question.id ?? -1)}
+                style={{ width: "40px", height: "40px" }}
+              >
+                <img
+                  security="true"
+                  src="https://cdn.icon-icons.com/icons2/3247/PNG/512/xmark_icon_198582.png"
+                  alt="xmark"
+                  width="40px"
+                  height="40px"
+                />
+              </Button>
+              <Col>
+                <ListGroup.Item
+                  key={index}
+                  style={{
+                    borderRadius: "50px",
+                    width: "100%",
+                    margin: "0.5rem auto",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => {
+                    redirectToQuestion(question.id ?? -1);
+                  }}
+                >
+                  <Col className="d-flex align-items-center">
+                    <Col>
+                      <span>{question.header}</span>
+                    </Col>
+                    <span>
+                      Ответы: {questionId_answersCount[question.id ?? -1]} шт
+                    </span>
+                  </Col>
+                </ListGroup.Item>
+              </Col>
+            </Row>
+          ) : (
+            <ListGroup.Item
+              key={index}
               style={{
-                width: "200px",
-                border: "1px solid black",
-                textAlign: "center",
+                borderRadius: "50px",
+                width: "93%",
+                margin: "0.5rem auto",
+                cursor: "pointer",
+              }}
+              onClick={() => {
+                redirectToQuestion(question.id ?? -1);
               }}
             >
-              Дата обновления
-            </th>
-            <th
-              style={{
-                width: "200px",
-                border: "1px solid black",
-                textAlign: "center",
-              }}
-            >
-              Количество ответов
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {question_store?.questions.map((question) => (
-            <tr
-              key={question.id}
-              className={
-                question.id === question_store.selectedQuestion.id
-                  ? "table-active"
-                  : ""
-              }
-              style={{ border: "1px solid black" }}
-              onClick={() => question_store.setSelectedQuestion(question)}
-            >
-              <td
-                style={{
-                  width: "1000px",
-                  cursor: "pointer",
-                  border: "1px solid black",
-                }}
-                onClick={() => redirectToQuestion(question.id ?? -1)}
-              >
-                {" "}
-                {question.header}
-              </td>
-              <td
-                style={{
-                  width: "200px",
-                  border: "1px solid black",
-                  textAlign: "center",
-                }}
-              >
-                {new Date(question?.updatedAt as Date).toLocaleDateString(
-                  "ru-RU",
-                  { year: "numeric", month: "numeric", day: "numeric" }
-                ) +
-                  " " +
-                  new Date(question?.updatedAt as Date).toLocaleTimeString(
-                    "ru-RU",
-                    { hour: "2-digit", minute: "2-digit" }
-                  )}
-              </td>
-              <td
-                style={{
-                  width: "100px",
-                  border: "1px solid black",
-                  textAlign: "center",
-                }}
-              >
-                {" "}
-                {questionId_answersCount[question.id ?? -1]}{" "}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
+              <Col className="d-flex align-items-center">
+                <Col>
+                  <span>{question.header}</span>
+                </Col>
+                <span>
+                  Ответы: {questionId_answersCount[question.id ?? -1]} шт
+                </span>
+              </Col>
+            </ListGroup.Item>
+          )
+        )}
+      </ListGroup>
     </Container>
   );
 });
