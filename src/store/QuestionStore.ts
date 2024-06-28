@@ -14,7 +14,7 @@ export default class QuestionStore {
       id: 0,
       header: "",
       markers: [],
-      isVip: false,
+      is_vip: false,
       userId: 0,
       sectionId: 0,
       createdAt: new Date(),

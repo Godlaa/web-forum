@@ -11,12 +11,15 @@ import {
 import { fetchAnswersByQuestionId } from "../http/answersApi";
 import { ListGroup, Col, Row, Button } from "react-bootstrap";
 import SearchLine from "./questionSearchQuestions";
-import { deleteQuestionById } from "../http/questionsApi";
+import { deleteQuestionById, fetchQuestions } from "../http/questionsApi";
 import { Question } from "../models";
+import QuestionUpdate from "./modals/questionUpdate";
 
 const QuestionBar: React.FC = observer(() => {
   const question_store = useContext(Context)?.question_store;
   const user_store = useContext(Context)?.user_store;
+  const [updateQuestionVisible, setUpdateQuestionVisible] = useState(false);
+  const [reload, setReload] = useState(false);
   const navigate = useNavigate();
 
   const [suggestions, setSuggestions] = useState<Question[]>([]);
@@ -38,6 +41,21 @@ const QuestionBar: React.FC = observer(() => {
   const [questionId_answersCount, setQuestionId_answersCount] = useState<{
     [key: number]: number;
   }>({});
+
+  const loadQuestions = async () => {
+    try {
+      const response = await fetchQuestions();
+      question_store?.setQuestions(response.rows);
+      setSuggestions(response.rows);
+    } catch (error) {
+      console.error("Error fetching user data", error);
+    }
+  };
+
+  useEffect(() => {
+    loadQuestions();
+    setReload(false);
+  }, [updateQuestionVisible, reload]);
 
   useEffect(() => {
     question_store?.questions.map((question) =>
@@ -119,12 +137,18 @@ const QuestionBar: React.FC = observer(() => {
         {suggestions.map((question, index) =>
           user_store?.user.role === "ADMIN" ? (
             <Row key={index} className="d-flex align-items-center ms-3">
+              <QuestionUpdate
+                show={updateQuestionVisible}
+                onHide={() => setUpdateQuestionVisible(false)}
+                questionId={question.id ?? -1}
+              />
               <Button
                 variant="outline"
                 className="d-flex align-items-center justify-content-center"
                 style={{ width: "40px", height: "40px" }}
               >
                 <img
+                  onClick={() => setUpdateQuestionVisible(true)}
                   security="true"
                   src="https://cdn.icon-icons.com/icons2/569/PNG/512/pen-black-diagonal-symbol-of-writing-tool_icon-icons.com_54470.png"
                   alt="pen"
@@ -135,7 +159,10 @@ const QuestionBar: React.FC = observer(() => {
               <Button
                 variant="outline"
                 className="d-flex align-items-center justify-content-center mx-4"
-                onClick={() => deleteQuestion(question.id ?? -1)}
+                onClick={() => {
+                  deleteQuestion(question.id ?? -1);
+                  setReload(!reload);
+                }}
                 style={{ width: "40px", height: "40px" }}
               >
                 <img

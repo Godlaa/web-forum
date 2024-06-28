@@ -34,7 +34,7 @@ const QuestionCreate: React.FC<{ show: boolean; onHide: () => void }> =
         createQuestion({
           header: header,
           markers: markers.map((marker) => marker.title),
-          isVip: isVip,
+          is_vip: isVip,
           userId: user_store.user.id ?? -1,
           sectionId: question_store?.selectedSection.id ?? -1,
         }).then(() => {

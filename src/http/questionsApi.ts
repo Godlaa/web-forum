@@ -1,5 +1,5 @@
 import { Question } from "../models";
-import { $host } from "./index";
+import { $authHost, $host } from "./index";
 
 export const createQuestion = async (question: Question) => {
   const { data } = await $host.post("api/question", question);
@@ -31,5 +31,18 @@ export const deleteQuestionById = async (id: number) => {
     await $host.delete("api/question/" + id);
   } catch (error) {
     console.error("Bad delete question", error);
+  }
+};
+
+export const updateQuestion = async (
+  id: number,
+  question: Partial<Question>
+) => {
+  try {
+    const { data } = await $authHost.put("api/question/" + id, question);
+    return data;
+  } catch (error) {
+    console.error("Failed to update question", error);
+    throw error;
   }
 };

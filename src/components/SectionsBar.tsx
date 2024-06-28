@@ -7,9 +7,10 @@ import { SECTION_ROUTE } from "../utils/consts";
 import { fetchQuestionsBySectionId } from "../http/questionsApi";
 import "../css/SectionsBar.css";
 import SearchLine from "./questionSearchSections";
-import { deleteSectionById } from "../http/sectionsApi";
+import { deleteSectionById, fetchSections } from "../http/sectionsApi";
 import SectionCreate from "./modals/sectionCreate";
 import { Section } from "../models";
+import SectionUpdate from "./modals/sectionUpdate";
 
 const SectionsBar: React.FC = observer(() => {
   const question_store = useContext(Context)?.question_store;
@@ -20,6 +21,7 @@ const SectionsBar: React.FC = observer(() => {
     [key: number]: number;
   }>({});
   const [sectionVisible, setSectionVisible] = useState(false);
+  const [updateSectionVisible, setUpdateSectionVisible] = useState(false);
 
   const [suggestions, setSuggestions] = useState<Section[]>([]);
 
@@ -31,6 +33,21 @@ const SectionsBar: React.FC = observer(() => {
     navigate(SECTION_ROUTE + `/${id}`);
   };
 
+  const loadSections = async () => {
+    try {
+      const response = await fetchSections();
+      question_store?.setSections(response);
+      setSuggestions(response);
+    } catch (error) {
+      console.error("Error fetching user data", error);
+    }
+  };
+
+  useEffect(() => {
+    loadSections();
+    setReload(false);
+  }, [updateSectionVisible, reload]);
+
   useEffect(() => {
     question_store?.sections.map((section) =>
       fetchQuestionsBySectionId(section.id ?? -1).then((data) => {
@@ -40,8 +57,7 @@ const SectionsBar: React.FC = observer(() => {
         }));
       })
     );
-    setReload(false);
-  }, [question_store?.sections, reload]);
+  }, [question_store?.sections]);
 
   const deleteSection = (sectionId: number) => {
     if (sectionId) {
@@ -53,12 +69,18 @@ const SectionsBar: React.FC = observer(() => {
     if (user_store?.user.role === "ADMIN") {
       return (
         <Row key={index} className="d-flex align-items-center ms-3">
+          <SectionUpdate
+            show={updateSectionVisible}
+            onHide={() => setUpdateSectionVisible(false)}
+            sectionId={section.id ?? -1}
+          />
           <Button
             variant="outline"
             className="d-flex align-items-center justify-content-center"
             style={{ width: "40px", height: "40px" }}
           >
             <img
+              onClick={() => setUpdateSectionVisible(true)}
               security="true"
               src="https://cdn.icon-icons.com/icons2/569/PNG/512/pen-black-diagonal-symbol-of-writing-tool_icon-icons.com_54470.png"
               alt="pen"
@@ -67,7 +89,10 @@ const SectionsBar: React.FC = observer(() => {
             />
           </Button>
           <Button
-            onClick={() => deleteSection(section.id ?? -1)}
+            onClick={() => {
+              deleteSection(section.id ?? -1);
+              setReload(true);
+            }}
             variant="outline"
             className="d-flex align-items-center justify-content-center mx-4"
             style={{ width: "40px", height: "40px" }}
@@ -128,7 +153,7 @@ const SectionsBar: React.FC = observer(() => {
 
   return (
     <Container
-      className="container-bg"
+      className="container-bg forum-body mt-5"
       style={{ backgroundColor: "#E5E5E5", border: "1px solid gray" }}
     >
       <Row className="shadow-text header-bg d-flex align-items-center">
@@ -142,7 +167,6 @@ const SectionsBar: React.FC = observer(() => {
               className="shadow-text"
               onClick={() => {
                 setSectionVisible(true);
-                setReload(true);
               }}
             >
               Добавить раздел
@@ -171,7 +195,10 @@ const SectionsBar: React.FC = observer(() => {
       </ListGroup>
       <SectionCreate
         show={sectionVisible}
-        onHide={() => setSectionVisible(false)}
+        onHide={() => {
+          setSectionVisible(false);
+          setReload(!reload);
+        }}
       />
     </Container>
   );

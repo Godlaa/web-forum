@@ -23,3 +23,13 @@ export const deleteSectionById = async (id: number) => {
     console.error("Bad delete section", error);
   }
 };
+
+export const updateSection = async (id: number, section: Partial<Section>) => {
+  try {
+    const { data } = await $authHost.put("api/section/" + id, section);
+    return data;
+  } catch (error) {
+    console.error("Failed to update section", error);
+    throw error;
+  }
+};

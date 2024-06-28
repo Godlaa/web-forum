@@ -1,6 +1,6 @@
 import Admin from "./pages/Admin";
 import Auth from "./pages/Auth";
-import SectionsTable from "./pages/SectionsTable";
+import SectionsTable from "./components/SectionsBar";
 import Profile from "./pages/UserProfile";
 import Question from "./pages/QuestionAnswersForm";
 import QuestionsTable from "./pages/QuestionsTable";

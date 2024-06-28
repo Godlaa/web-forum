@@ -34,7 +34,7 @@ export interface Question {
   id?: number;
   header: string;
   markers: string[];
-  isVip: boolean;
+  is_vip: boolean;
   userId?: number;
   sectionId: number;
   createdAt?: Date;
