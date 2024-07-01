@@ -2,6 +2,7 @@ stages:
   - lint
   - build-push
   - pack
+  - deploy
 
 lint:
   stage: lint
@@ -19,22 +20,39 @@ build-push:
     - lint
 
   rules:
-  - if: '$CI_COMMIT_TAG != null'
-    when: manual
+    - if: "$CI_COMMIT_TAG != null"
+      when: manual
 
   image: docker:20.10
 
   variables:
     DOCKER_HOST: tcp://docker:2375
-    DOCKER_TLS_CERTDIR: ''
+    DOCKER_TLS_CERTDIR: ""
 
   services:
     - docker:20.10.16-dind
-  
+
   before_script:
     - export IMAGE=$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-  
+
   script:
     - time docker build -t $IMAGE -f docker/Dockerfile .
     - docker push $IMAGE
+    - docker save $CI_REGISTRY_IMAGE/frontend:latest > frontend_latest.tar
+
+deploy-frontend:
+  stage: deploy
+
+  before_script:
+    - export IMAGE=$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+
+  script:
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan 95.163.223.253 >> ~/.ssh/known_hosts
+    - scp frontend_latest.tar root@95.163.223.253:/frontend_latest.tar
+  only:
+    - main
