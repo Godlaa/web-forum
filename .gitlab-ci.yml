@@ -44,6 +44,9 @@ build-push:
 deploy:
   stage: deploy
 
+  needs:
+    - build-push
+    
   before_script:
     - export IMAGE=$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
