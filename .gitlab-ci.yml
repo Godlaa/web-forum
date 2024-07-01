@@ -38,8 +38,8 @@ build-push:
   script:
     - time docker build -t $IMAGE -f docker/Dockerfile .
     - docker push $IMAGE
-    - docker pull $CI_REGISTRY_IMAGE/frontend:latest  # Ensure image is available locally
-    - docker save $CI_REGISTRY_IMAGE/frontend:latest > frontend_latest.tar
+    - docker pull $IMAGE
+    - docker save $IMAGE > frontend_latest.tar
 
   artifacts:
     paths:
