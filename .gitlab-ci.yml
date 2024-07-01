@@ -54,5 +54,6 @@ deploy-frontend:
     - chmod 600 ~/.ssh/id_rsa
     - ssh-keyscan 95.163.223.253 >> ~/.ssh/known_hosts
     - scp frontend_latest.tar root@95.163.223.253:/frontend_latest.tar
+    - exit
   only:
     - main
