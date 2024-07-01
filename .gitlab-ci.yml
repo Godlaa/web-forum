@@ -1,7 +1,6 @@
 stages:
   - lint
   - build-push
-  - pack
   - deploy
 
 lint:
