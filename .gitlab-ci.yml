@@ -38,12 +38,6 @@ build-push:
   script:
     - time docker build -t $IMAGE -f docker/Dockerfile .
     - docker push $IMAGE
-    - docker pull $IMAGE
-    - docker save $IMAGE > frontend_latest.tar
-
-  artifacts:
-    paths:
-      - frontend_latest.tar
       
 deploy:
   stage: deploy
