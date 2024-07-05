@@ -6,4 +6,4 @@ export const QUESTION_ROUTE: string = "/question";
 export const PROFILE_ROUTE: string = "/profile";
 export const SECTION_ROUTE: string = "/section";
 export const QUESTION_CREATE_ROUTE: string = "/newQuestion";
-export const avatar_url: string = "http://localhost:5000/";
+export const avatar_url: string = "https://dz-help-be.qpilipp.ru/";
